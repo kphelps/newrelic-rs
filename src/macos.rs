@@ -19,6 +19,13 @@ pub fn transaction_set_name(transaction_id: i64, name: &str) -> Result<(), ()> {
     Ok(())
 }
 
+/// Add an attribute for the transaction
+///
+/// Must be called after `transaction_begin()` and before `transaction_end()`.
+pub fn transaction_add_attribute(transaction_id: i64, name: &str, value: &str) -> Result<(), ()> {
+    Ok(())
+}
+
 /// Identify the end of a transaction
 pub fn transaction_end(transaction_id: i64) -> Result<(), ()> {
     Ok(())

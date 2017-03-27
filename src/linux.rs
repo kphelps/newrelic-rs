@@ -12,6 +12,7 @@ mod ffi {
         pub fn newrelic_message_handler(raw_message: *mut c_void) -> *mut c_void;
         pub fn newrelic_transaction_begin() -> c_long;
         pub fn newrelic_transaction_set_name(transaction_id: c_long, name: *const c_char) -> c_int;
+        pub fn newrelic_transaction_add_attribute(transaction_id: c_long, name: *const c_char, value: *const c_char) -> c_int;
         pub fn newrelic_transaction_end(transaction_id: c_long) -> c_int;
         pub fn newrelic_segment_generic_begin(transaction_id: c_long, parent_segment_id: c_long, name: *const c_char) -> c_long;
         pub fn newrelic_segment_external_begin(transaction_id: c_long, parent_segment_id: c_long, host: *const c_char, name: *const c_char) -> c_long;
@@ -51,6 +52,22 @@ pub fn transaction_set_name(transaction_id: i64, name: &str) -> Result<(), ()> {
     let name = CString::new(name).unwrap();
     let rc = unsafe {
         ffi::newrelic_transaction_set_name(transaction_id, name.as_ptr())
+    };
+
+    match rc {
+        0 => Ok(()),
+        _ => Err(()),
+    }
+}
+
+/// Add an attribute for the transaction
+///
+/// Must be called after `transaction_begin()` and before `transaction_end()`
+pub fn transaction_add_attribute(transaction_id: i64, name: &str, value: &str) -> Result<(), ()> {
+    let name = CString::new(name).unwrap();
+    let value = CString::new(value).unwrap();
+    let rc = unsafe {
+        ffi::newrelic_transaction_add_attribute(transaction_id, name.as_ptr(), value.as_ptr())
     };
 
     match rc {
